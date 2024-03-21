@@ -1,3 +1,4 @@
+import 'package:elocalize/presentation/books/view/books_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
@@ -10,6 +11,7 @@ class MainScreen extends StatelessWidget {
     int columnCount = 4;
 
     return Scaffold(
+      backgroundColor: Colors.grey,
       body: Padding(
         padding: const EdgeInsets.all(10.0),
         child: Column(
@@ -53,7 +55,7 @@ class MainScreen extends StatelessWidget {
                             child: FadeInAnimation(
                               child: InkWell(
                                 onTap: () {
-                                  //print(index);
+                                  Navigator.of(context).push(MaterialPageRoute(builder: (context)=>const BooksView()));
                                 },
                                 child: Container(
                                   margin: EdgeInsets.only(
@@ -88,6 +90,21 @@ class MainScreen extends StatelessWidget {
                   ),
                 ),
               ),
+              const SizedBox(
+                height: 10,
+              ),
+              SizedBox(
+                height: 20.0,
+                width: double.infinity,
+                child: Card(
+                  elevation: 30,
+                  color: Colors.white,
+                  shadowColor: Colors.grey.withOpacity(0.5),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              )
             ]),
       ),
       floatingActionButton: FloatingActionButton.extended(
