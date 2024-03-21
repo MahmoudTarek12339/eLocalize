@@ -65,10 +65,9 @@ flutter:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
   assets:
-     - assets/shelves.png
-     - assets/shelf.png
      - assets/books.jpg
      - assets/The_Alchemist.png
+     - assets/books/
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
 

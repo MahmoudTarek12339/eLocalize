@@ -1,3 +1,4 @@
+import 'package:elocalize/presentation/addBook/view/add_book_view.dart';
 import 'package:elocalize/presentation/books/view/books_view.dart';
 import 'package:elocalize/presentation/common/common_widgets/hero_widget.dart';
 import 'package:elocalize/presentation/search/view/search_view.dart';
@@ -13,7 +14,6 @@ class MainScreen extends StatelessWidget {
     int columnCount = 4;
 
     return Scaffold(
-      backgroundColor: Colors.grey,
       body: Padding(
         padding: const EdgeInsets.all(10.0),
         child: Column(children: [
@@ -109,7 +109,11 @@ class MainScreen extends StatelessWidget {
         ]),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {},
+        backgroundColor: const Color(0xFFD22120),
+        onPressed: () {
+          Navigator.of(context)
+              .push(MaterialPageRoute(builder: (context) => const AddBookView()));
+        },
         label: const Text('Add'),
         icon: const Icon(Icons.add),
       ),
