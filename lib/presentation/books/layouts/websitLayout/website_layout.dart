@@ -1,3 +1,4 @@
+import 'package:elocalize/domain/model/book_model.dart';
 import 'package:elocalize/presentation/books/widgets/book_details_widget.dart';
 import 'package:elocalize/presentation/books/widgets/books_widget.dart';
 import 'package:elocalize/presentation/books/widgets/page_switch_arrows_widget.dart';
@@ -7,8 +8,10 @@ class BooksWebLayout extends StatelessWidget {
   final int index;
   final double value;
   final PageController _controller;
+  final BookModel book;
 
-  const BooksWebLayout(this.index, this.value, this._controller, {super.key});
+  const BooksWebLayout(this.index, this.value, this._controller, this.book,
+      {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -21,14 +24,22 @@ class BooksWebLayout extends StatelessWidget {
             vertical: 15,
           ),
           child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Expanded(child: BookDetailsWidget(index)),
+            //book author and description
+            Expanded(child: BookDetailsWidget(index, book)),
             const SizedBox(
               width: 5,
             ),
-            Expanded(child: BooksWidget(index, value)),
+            //book image and title
+            Expanded(
+                child: BooksWidget(
+              index,
+              value,
+              book.title,
+            )),
           ]),
         ),
-        PageSwitchArrowsWidget(_controller)
+        //arrows to turn right and left on website
+        PageSwitchArrowsWidget(_controller, book.field)
       ],
     );
   }

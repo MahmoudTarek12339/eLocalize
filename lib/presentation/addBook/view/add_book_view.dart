@@ -1,4 +1,8 @@
+import 'package:elocalize/domain/model/book_model.dart';
+import 'package:elocalize/presentation/main/controller/main_controller.dart';
+import 'package:elocalize/presentation/resources/color_manager.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class AddBookView extends StatefulWidget {
   const AddBookView({super.key});
@@ -22,12 +26,12 @@ class _AddBookViewState extends State<AddBookView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF44336),
+        backgroundColor: ColorManager.darkRed,
         centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios),
-          onPressed: (){
-            Navigator.of(context).pop();
+          onPressed: () {
+            Navigator.pop(context);
           },
         ),
         title: const Text(
@@ -44,6 +48,7 @@ class _AddBookViewState extends State<AddBookView> {
             key: _formKey,
             child: Column(
               children: [
+                //take book name
                 TextFormField(
                   controller: _titleController,
                   decoration: InputDecoration(
@@ -59,6 +64,8 @@ class _AddBookViewState extends State<AddBookView> {
                   },
                 ),
                 const SizedBox(height: 16),
+
+                //take book author and field number
                 Row(
                   children: [
                     Expanded(
@@ -84,7 +91,6 @@ class _AddBookViewState extends State<AddBookView> {
                       child: DropdownButton(
                         value: _selectedFieldNumber,
                         borderRadius: BorderRadius.circular(5),
-                        
                         alignment: AlignmentDirectional.center,
                         onChanged: (field) {
                           setState(() {
@@ -93,13 +99,15 @@ class _AddBookViewState extends State<AddBookView> {
                         },
                         items: List.generate(16, (index) => index + 1)
                             .map((value) => DropdownMenuItem(
-                                value: value, child: Text('${value + 1}')))
+                                value: value, child: Text('$value')))
                             .toList(),
                       ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 16),
+
+                //take book description
                 TextFormField(
                   controller: _descriptionController,
                   textAlignVertical: TextAlignVertical.top,
@@ -118,6 +126,8 @@ class _AddBookViewState extends State<AddBookView> {
                   },
                 ),
                 const SizedBox(height: 48),
+
+                //submit button
                 Container(
                   height: 50,
                   width: double.infinity,
@@ -128,19 +138,13 @@ class _AddBookViewState extends State<AddBookView> {
                   child: ElevatedButton(
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        // Submit data
-                        String title = _titleController.text;
-                        String author = _authorController.text;
-                        String description = _descriptionController.text;
-                        print(
-                            'Title: $title, Author: $author, Description: $description');
-                        // Reset form
-                        _formKey.currentState!.reset();
-                        _selectedFieldNumber=1;
+                        _addBook().then((value) {
+                          Navigator.pop(context);
+                        });
                       }
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFD22120),
+                      backgroundColor: ColorManager.darkRed,
                     ),
                     child: const Text('Submit'),
                   ),
@@ -149,6 +153,36 @@ class _AddBookViewState extends State<AddBookView> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Future _addBook() async {
+    final bookProvider = Provider.of<BooksProvider>(context, listen: false);
+
+    // Create a new BookModel object from the user input
+    BookModel newBook = BookModel(
+      _titleController.text,
+      _authorController.text,
+      _descriptionController.text.toString(),
+      _selectedFieldNumber,
+    );
+
+    // add book to data base
+    bookProvider.addBook(newBook);
+
+    // Clear text field controllers after adding the book
+    _titleController.clear();
+    _authorController.clear();
+    _descriptionController.clear();
+    _selectedFieldNumber = 1;
+
+    // Show snack bar to confirm book addition
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Book added successfully!'),
+        backgroundColor: Colors.green,
+        duration: Duration(seconds: 2),
       ),
     );
   }

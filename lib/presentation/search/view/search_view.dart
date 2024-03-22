@@ -1,5 +1,9 @@
+import 'package:elocalize/presentation/common/common_widgets/hero_widget.dart';
+import 'package:elocalize/presentation/resources/color_manager.dart';
+import 'package:elocalize/presentation/search/controller/search_controller.dart';
 import 'package:elocalize/presentation/search/widgets/search_item.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class SearchView extends StatelessWidget {
   SearchView({super.key});
@@ -17,54 +21,61 @@ class SearchView extends StatelessWidget {
               Navigator.pop(context);
             },
             icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black)),
-        title: TextFormField(
-          controller: _queryController,
-          onChanged: (value) {
-            //_viewModel.setQuery(_queryController.text);
-          },
-          decoration: InputDecoration(
-            hintText: 'Search Book',
-            hintStyle: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: Colors.grey,
-            ),
-            border: InputBorder.none,
-            suffixIcon: IconButton(
-              onPressed: () {
-                _queryController.clear();
-                //_viewModel.setQuery('');
-              },
-              icon: const Icon(
-                Icons.close,
-                color: Colors.black,
-                size: 18,
+        title: Consumer<SearchProvider>(
+          builder: (context, searchProvider, _) {
+            return HeroWidget(
+              'Search Book',
+              TextFormField(
+                autofocus: true,
+                controller: _queryController,
+                onChanged: (value) {
+                  searchProvider.searchBooks(_queryController.text.toString());
+                },
+                decoration: InputDecoration(
+                  hintText: 'Search Book',
+                  hintStyle: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.grey,
+                  ),
+                  border: InputBorder.none,
+                  suffixIcon: IconButton(
+                    onPressed: () {
+                      _queryController.clear();
+                    },
+                    icon: const Icon(
+                      Icons.close,
+                      color: Colors.black,
+                      size: 18,
+                    ),
+                  ),
+                ),
               ),
-            ),
-          ),
+            );
+          },
         ),
       ),
       body: SizedBox.expand(
-        child: StreamBuilder<List<String>>(
-          stream: Stream.periodic(const Duration(seconds: 1), (count) {
-            return ['Item ${count + 1}', DateTime.now().toString()];
-          }).take(5),
-          builder: (context, snapShot) {
-            if (snapShot.hasData && snapShot.data!.isNotEmpty) {
+        child: Consumer<SearchProvider>(
+          builder: (context, searchProvider, _) {
+            if (searchProvider.searchResults.isNotEmpty) {
               return Padding(
                   padding: const EdgeInsets.all(12),
                   child: ListView.separated(
                       physics: const BouncingScrollPhysics(),
                       itemBuilder: (context, index) {
-                        return SearchItem(snapShot.data![index],_queryController);
+                        return SearchItem(
+                            searchProvider.searchResults[index].title,
+                            searchProvider.searchResults[index].field,
+                            _queryController);
                       },
                       separatorBuilder: (context, index) {
                         return Container(
                             height: 2,
                             width: double.infinity,
-                            color: const Color(0xff9E9E9E));
+                            color: ColorManager.lightGrey);
                       },
-                      itemCount: snapShot.data!.length));
+                      itemCount: searchProvider.searchResults.length));
             } else {
               return const Center(
                 child: Text(

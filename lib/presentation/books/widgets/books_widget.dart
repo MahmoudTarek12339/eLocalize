@@ -1,12 +1,14 @@
 import 'dart:math';
 
+import 'package:elocalize/presentation/resources/color_manager.dart';
 import 'package:flutter/material.dart';
 
 class BooksWidget extends StatefulWidget {
   final int index;
   final double value;
+  final String title;
 
-  const BooksWidget(this.index, this.value, {super.key});
+  const BooksWidget(this.index, this.value, this.title, {super.key});
 
   @override
   State<BooksWidget> createState() => _BooksWidgetState();
@@ -25,8 +27,8 @@ class _BooksWidgetState extends State<BooksWidget>
 
   @override
   Widget build(BuildContext context) {
-    //final w = MediaQuery.of(context).size.width;
-    //final h = MediaQuery.of(context).size.height;
+    final w = MediaQuery.of(context).size.width;
+    final h = MediaQuery.of(context).size.height;
 
     //here we get the value scrolled from page to determine rotation
     double diff = widget.index - widget.value;
@@ -42,18 +44,36 @@ class _BooksWidgetState extends State<BooksWidget>
             builder: (context, child) {
               return Transform.scale(
                   scale: _animation.value,
-                  child: SizedBox(
-                    child: Card(
-                        elevation: 20.0,
-                        shadowColor: Colors.black.withOpacity(0.1),
-                        child: Transform(
-                            transform: Matrix4.rotationY(rotation),
-                            child: const Image(
-                              image: AssetImage(
-                                  'assets/The_Alchemist.png'),
-                              fit: BoxFit.fill,
-                            ))),
-                  ));
+                  child: Card(
+                      elevation: 20.0,
+                      shadowColor: Colors.black.withOpacity(0.1),
+                      child: Transform(
+                          transform: Matrix4.rotationY(rotation),
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              //book cover image
+                              const Image(
+                                image: AssetImage('assets/book_bg.png'),
+                                fit: BoxFit.fill,
+                              ),
+                              //book title
+                              SizedBox(
+                                width: w * 0.4,
+                                height: h * 0.3,
+                                child: Center(
+                                  child: Text(
+                                    widget.title,
+                                    style: TextStyle(
+                                      color: ColorManager.darkRed,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 42,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ))));
             }));
   }
 
@@ -61,8 +81,9 @@ class _BooksWidgetState extends State<BooksWidget>
   void dispose() {
     _animationController.dispose();
     super.dispose();
-  } //initialize animation controllers
+  }
 
+  //initialize animation controllers
   _initTransitionAnimation() {
     _animationController = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 800));
